@@ -6,11 +6,12 @@ from mbuild import gamepad
 import novapi
 import time
 
-# initialize the variables
+# initialize the variables, Including variables from MakeX challenge
 auto_stage = 0
 shoot = 0
 invert = 0
 feeddc = 1
+mouthstat = 0
 lrmode = 0  # Differentiate between shoot and arm control mode
 bp = 50
 
@@ -21,12 +22,8 @@ dc3_variable = "DC3"
 dc4_variable = "DC4"
 dc5_variable = "DC5"
 
-# Arm
-smartservo_arm = smartservo_class("M6", "INDEX1")
-
-# Hand
-smartservo_hand_left = smartservo_class("M6", "INDEX2")
-smartservo_hand_right = smartservo_class("M6", "INDEX3")
+# Trash arm
+smartservo_trashmouth = smartservo_class("M5", "INDEX1")
 
 # Bot motors
 encoder_motor_M1 = encoder_motor_class("M1", "INDEX1")
@@ -50,13 +47,11 @@ def Manual():
     while True:
         time.sleep(0.001)
         JoyRes.MovingJoystick(invert)
+        JoyRes.MouthControl()
 
 
 def LoadMe():
     global auto_stage
-
-    smartservo_arm.set_power(50)
-    smartservo_arm.move(30, 10)
 
 
 class JoyRes:
@@ -86,7 +81,7 @@ class JoyRes:
         # Encoder values. If the encoder motors config are changed even the
         # slightest. change this one first then the inverted controls
 
-        vl = 0.5
+        vl = 0.3
 
         EFl = vl * (gamepad.get_joystick("Ly") - Rl
                     - gamepad.get_joystick("Rx"))
@@ -111,6 +106,23 @@ class JoyRes:
         encoder_motor_M2.set_power(EFr)
         encoder_motor_M3.set_power(ERl)
         encoder_motor_M4.set_power(ERr)
+
+    def MouthControl():
+        global mouthstat  # 0 = close 1 = open
+        if gamepad.is_key_pressed("L1"):
+            if mouthstat == 0:
+                mouthstat = 1
+                smartservo_trashmouth.move(90, 10)
+            elif mouthstat == 1:
+                mouthstat = 0
+                smartservo_trashmouth.move(-90, 10)
+            else:
+                # Reset mouthstat to 0 if something went wrong
+                mouthstat = 1
+        while not not gamepad.is_key_pressed("L1"):
+            pass
+
+        pass
 
 
 class ManualRes:
