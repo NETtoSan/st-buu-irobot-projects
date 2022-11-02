@@ -86,7 +86,7 @@ class JoyRes:
         # Encoder values. If the encoder motors config are changed even the
         # slightest. change this one first then the inverted controls
 
-        vl = 0.8
+        vl = 0.5
 
         EFl = vl * (gamepad.get_joystick("Ly") - Rl
                     - gamepad.get_joystick("Rx"))
