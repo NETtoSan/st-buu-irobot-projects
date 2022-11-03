@@ -16,17 +16,15 @@
 
 #include <esp_now.h>
 #include <WiFi.h>
-#include <Wire.h>
-#include <WireSlave.h>
 int add1 = 34 ;
 int minus1 = 35;
 int clear1 = 32;
-int successPin = 33;
-int failedPin = 25;
+int teamMode = 33;
+int status = 1;
+int lightTeamA = 25;
+int lightTeamb = 26;
 int scoreTeam1 = 0;
 int scoreTeam2 = 0;
-#define SLAVE_ADDR 9
-#define ANSWERSIZE 5
 
 // REPLACE WITH YOUR RECEIVER MAC Address
 uint8_t broadcastAddress[] = {0x30, 0xC6, 0xF7, 0x04, 0xD3, 0x00};
@@ -41,12 +39,6 @@ typedef struct struct_message {
 struct_message myData;
 
 esp_now_peer_info_t peerInfo;
-
-// callback when data is sent
-void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-}
 
  
 void setup() {
@@ -82,13 +74,11 @@ void setup() {
   pinMode(clear1,INPUT);
   pinMode(successPin,OUTPUT);
   pinMode(failedPin,OUTPUT);
-
-  // Initialize I2C communications as Master
-  WireSlave.begin()
-{
+  pinMode(lightTeamA,OUTPUT);
+  pinMode(lightTeamB,OUTPUT);
+  pinMode(teamMode,INPUT);
 
 }
- 
 void loop() {
   Serial.println(digitalRead(add1));
 
@@ -97,9 +87,15 @@ void loop() {
   int clear1Status = digitalRead(clear1);
   // Condition to send the message
   if(add1Status == HIGH){
-    scoreTeam1 = scoreTeam1+1;
-    myData.scoreA = scoreTeam1;
-    myData.scoreB = 69;
+    if(status == 1){
+      scoreTeam1 = scoreTeam1 + 1;
+      myData.scoreA = scoreTeam1;
+      myData.scoreB = scoreTeam2;
+    } else() {
+      scoreTeam2 = scoreTeam2 + 1;
+      myData.scoreA = scoreTeam1;
+      myData.scoreB = scoreTeam2;
+    }
    // Send message via ESP-NOW
 
     esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
@@ -115,35 +111,22 @@ void loop() {
     }
     delay(200);
 
-    // Write a charatre to the Slave
-    WireSlave.beginTransmission(SLAVE_ADDR);
-    char teamAStr[5] ;
-    sprintf(teamAStr, '%d', scoreTeam1);
-    WireSlave.write("");
-    WireSlave.endTransmission();
-
     Serial.println("Receive data");
 
-    // Read response from Slave
-    // Read back 5 characters
-    WireSlave.requestFrom(SLAVE_ADDR,ANSWERSIZE);
-
-    // Add characters to string
-    String response = "";
-    while (WireSlave.available()) {
-        char b = WireSlave.read();
-        response += b;
-  } 
-  
-  // Print to Serial Monitor
-  Serial.println(response);
   }
 
   //minus button
   if(minus1Status == HIGH){
-    scoreTeam1 = scoreTeam1 - 1;
-    myData.scoreA = scoreTeam1;
-    myData.scoreB = 69;
+    if(status == 1){
+      scoreTeam1 = scoreTeam1 - 1;
+      myData.scoreA = scoreTeam1;
+      myData.scoreB = scoreTeam2;
+    } else() {
+      scoreTeam2 = scoreTeam2 - 1;
+      myData.scoreA = scoreTeam1;
+      myData.scoreB = scoreTeam2;      
+    }
+    
    // Send message via ESP-NOW
 
     esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
@@ -160,9 +143,15 @@ void loop() {
     delay(200);
   }
   if(clear1Status == HIGH){
-    scoreTeam1 = 0;
-    myData.scoreA = scoreTeam1;
-    myData.scoreB = 69;
+    if(status == 1){
+      scoreTeam1 = 0;
+      myData.scoreA = scoreTeam1;
+      myData.scoreB = scoreTeam2;
+    } else() {
+      scoreTeam2 = 0;
+      myData.scoreA = scoreTeam1;
+      myData.scoreB = scoreTeam2;
+    }
    // Send message via ESP-NOW
 
     esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
@@ -179,16 +168,23 @@ void loop() {
     delay(200);
   }
 
+  // 
+  if(digitalRead(teamMode) == HIGH){
+    status = status * (-1);
+    if(status == 1){
+      digitalWrite(lightTeamA,HIGH);
+      digitalWrite(lightTeamB,LOW);
+    }else(){
+      digitalWrite(lightTeamA,LOW);
+      digitalWrite(lightTeamB,HIGH);      
+      }
+    delay(200);
+  }
+
   //function to send the message, it's in void loop to prevent complicated issues if it's out of the void loop
   
   digitalWrite(successPin,LOW);
   digitalWrite(failedPin,LOW);
 
-  
-
-
-  
  delay(200);
 }
-
-
