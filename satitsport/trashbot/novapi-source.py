@@ -112,10 +112,10 @@ class JoyRes:
         if gamepad.is_key_pressed("L1"):
             if mouthstat == 0:
                 mouthstat = 1
-                smartservo_trashmouth.move(90, 50)
+                smartservo_trashmouth.move(100, 60)
             elif mouthstat == 1:
                 mouthstat = 0
-                smartservo_trashmouth.move(-90, 50)
+                smartservo_trashmouth.move(-100, 60)
             else:
                 # Reset mouthstat to 0 if something went wrong
                 mouthstat = 1
