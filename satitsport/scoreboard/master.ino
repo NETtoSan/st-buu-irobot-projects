@@ -16,18 +16,12 @@
 
 #include <esp_now.h>
 #include <WiFi.h>
-<<<<<<< HEAD
-#include <Wire.h>
-#include <WireSlave.h>
-int add1 = 34;
-=======
 #include "SPI.h"
 #include "TFT_eSPI.h"
 
 TFT_eSPI tft = TFT_eSPI();
 
 int add1 = 34 ;
->>>>>>> e02a2d0e24f81339412db4a7d9758509b39e3624
 int minus1 = 35;
 int clear1 = 22;
 int teamMode = 23;
@@ -52,14 +46,6 @@ struct_message myData;
 
 esp_now_peer_info_t peerInfo;
 
-<<<<<<< HEAD
-// callback when data is sent
-void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
-{
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-}
-=======
 //stuffs for the moniter to work
 // Assign human-readable names to some common 16-bit color values:
 #define	BLACK   0x0000
@@ -73,7 +59,6 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 
 unsigned long total = 0;
 unsigned long tn = 0;
->>>>>>> e02a2d0e24f81339412db4a7d9758509b39e3624
 
 void setup()
 {
@@ -92,13 +77,8 @@ void setup()
 
   // Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Trasnmitted packet
-<<<<<<< HEAD
-  esp_now_register_send_cb(OnDataSent);
-
-=======
   //esp_now_register_send_cb(OnDataSent);
   
->>>>>>> e02a2d0e24f81339412db4a7d9758509b39e3624
   // Register peer
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
   peerInfo.channel = 0;
@@ -113,31 +93,6 @@ void setup()
   // pinMode pin that will be use to be inputs
   pinMode(add1, INPUT);
   pinMode(minus1, INPUT);
-<<<<<<< HEAD
-  pinMode(clear1, INPUT);
-  pinMode(successPin, OUTPUT);
-  pinMode(failedPin, OUTPUT);
-
-  // Initialize I2C communications as Master
-  WireSlave.begin()
-  {
-  }
-
-  void loop()
-  {
-    Serial.println(digitalRead(add1));
-
-    int add1Status = digitalRead(add1);
-    int minus1Status = digitalRead(minus1);
-    int clear1Status = digitalRead(clear1);
-    // Condition to send the message
-    if (add1Status == HIGH)
-    {
-      scoreTeam1 = scoreTeam1 + 1;
-      myData.scoreA = scoreTeam1;
-      myData.scoreB = 69;
-      // Send message via ESP-NOW
-=======
   pinMode(clear1,INPUT);
   pinMode(lightTeamA,OUTPUT);
   pinMode(lightTeamB,OUTPUT);
@@ -176,72 +131,9 @@ void loop() {
       myData.scoreB = scoreTeam2;
     }
    // Send message via ESP-NOW
->>>>>>> e02a2d0e24f81339412db4a7d9758509b39e3624
 
       esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
 
-<<<<<<< HEAD
-      if (result == ESP_OK)
-      {
-        digitalWrite(successPin, HIGH);
-        Serial.println("Sent with success YEHAHHHHHHH");
-        Serial.println(myData.scoreA);
-      }
-      else
-      {
-        digitalWrite(failedPin, HIGH);
-        Serial.println("Error sending the data");
-      }
-      delay(200);
-
-      // Write a charatre to the Slave
-      WireSlave.beginTransmission(SLAVE_ADDR);
-      char teamAStr[5];
-      sprintf(teamAStr, '%d', scoreTeam1);
-      WireSlave.write("");
-      WireSlave.endTransmission();
-
-      Serial.println("Receive data");
-
-      // Read response from Slave
-      // Read back 5 characters
-      WireSlave.requestFrom(SLAVE_ADDR, ANSWERSIZE);
-
-      // Add characters to string
-      String response = "";
-      while (WireSlave.available())
-      {
-        char b = WireSlave.read();
-        response += b;
-      }
-
-      // Print to Serial Monitor
-      Serial.println(response);
-    }
-
-    // minus button
-    if (minus1Status == HIGH)
-    {
-      scoreTeam1 = scoreTeam1 - 1;
-      myData.scoreA = scoreTeam1;
-      myData.scoreB = 69;
-      // Send message via ESP-NOW
-
-      esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
-
-      if (result == ESP_OK)
-      {
-        digitalWrite(successPin, HIGH);
-        Serial.println("Sent with success YEHAHHHHHHH");
-        Serial.println(myData.scoreA);
-      }
-      else
-      {
-        digitalWrite(failedPin, HIGH);
-        Serial.println("Error sending the data");
-      }
-      delay(200);
-=======
     if (result == ESP_OK) {
       Serial.println("Sent with success YEHAHHHHHHH");
       Serial.println(myData.scoreA);
@@ -277,7 +169,6 @@ void loop() {
     }
     else {
       Serial.println("Error sending the data");
->>>>>>> e02a2d0e24f81339412db4a7d9758509b39e3624
     }
     if (clear1Status == HIGH)
     {
@@ -309,8 +200,6 @@ void loop() {
 
     delay(200);
   }
-<<<<<<< HEAD
-=======
   if(clear1Status == HIGH){
     if(status == 1){
       scoreTeam1 = 0;
@@ -378,4 +267,3 @@ void loop() {
 
  delay(200);
 }
->>>>>>> e02a2d0e24f81339412db4a7d9758509b39e3624
