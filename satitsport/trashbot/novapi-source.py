@@ -70,9 +70,9 @@ class JoyRes:
         Rr = 0   # Rear right
 
         # Adjust LR slide tuning here
-        if gamepad.get_joystick("Lx") != 0:
-            Fl = Lx + 20
-            Fr = Lx + 20
+        #if gamepad.get_joystick("Lx") != 0:
+        #    Fl = Lx + 20
+        #    Fr = Lx + 20
 
         Fl = Lx + Fl
         Fr = Lx + Fr
