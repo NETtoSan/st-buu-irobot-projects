@@ -44,6 +44,7 @@ def Manual():
     global feeddc
     global bp
     LoadMe()
+    
     while True:
         time.sleep(0.001)
         JoyRes.MovingJoystick(invert)
